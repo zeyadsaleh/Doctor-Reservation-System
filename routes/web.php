@@ -15,15 +15,21 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return redirect('/appointments');
+})->middleware('auth');
 
 Auth::routes();
 
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware' => 'auth'], function () {
-###################Patients#################
-Route::get('patients/create', 'PatientController@create')->name('patients.create');
-Route::post('/patients', 'PatientController@store')->name('patients.store');
+
+    ###################Patients#################
+    Route::get('patients/create', 'PatientController@create')->name('patients.create');
+    Route::post('/patients', 'PatientController@store')->name('patients.store');
+    ###################Appointment#######################
+    Route::resource('appointments', 'AppointmentController')->only([
+        'index', 'store', 'update', 'edit'
+    ]);
+
 });

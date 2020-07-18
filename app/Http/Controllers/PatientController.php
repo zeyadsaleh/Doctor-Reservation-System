@@ -39,13 +39,13 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $patient = $request->only(['first_name', 'last_name', 'email', 'gender','birth_date','country','mobile','occupation','painType_id']);
+        $patient = $request->only(['first_name', 'last_name', 'email', 'gender','birth_date','country','mobile','occupation','paintype_id']);
         $patient = Patient::create($patient);
         
         //assigning the patient to his credentials in users table by polymorfic relation        
         $user = Auth::User();
         $patient->user()->save($user);
-        return redirect()->route('patients.create');
+        return redirect('/appointments');
     }
 
   

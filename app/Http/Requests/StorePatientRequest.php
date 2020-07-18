@@ -33,7 +33,7 @@ class StorePatientRequest extends FormRequest
             'birth_date' => 'required|date',
             'gender' => ['required', Rule::in(['male', 'female'])],
             'occupation' => 'required|string|min:3|max:100',
-            'painType_id' => 'required|exists:pain_types,id',
+            'paintype_id' => 'required|exists:pain_types,id',
         ];
     }
 }

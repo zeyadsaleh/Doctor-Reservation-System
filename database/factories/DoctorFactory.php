@@ -6,9 +6,10 @@ use App\Doctor;
 use Faker\Generator as Faker;
 
 $factory->define(Doctor::class, function (Faker $faker) {
-    $specialty = ['Neurology','Orthopedics','Oncology','Optician','Dermatology'];
+    $speciality = ['Neurology', 'Orthopedics', 'Oncology', 'Optician', 'Dermatology'];
     return [
+        'full_name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'specialty'=>$faker->randomElement($specialty)
+        'speciality' => $faker->randomElement($speciality)
     ];
 });

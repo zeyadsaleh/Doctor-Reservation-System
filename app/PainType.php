@@ -9,4 +9,9 @@ class PainType extends Model
     protected $fillable = [
         'type', 'speciality'
     ];
+
+    public function patient()
+    {
+      return $this->hasOne('App\Patient');
+    }
 }

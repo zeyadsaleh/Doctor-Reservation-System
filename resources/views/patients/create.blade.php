@@ -2,14 +2,15 @@
 
 @section('content')
 <div class="container">
+    <h1 class="text-center">Please fill these informations</h1>
     @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
     <form method="POST" action="{{ route('patients.store') }}">
         @csrf
@@ -41,9 +42,9 @@
             <label for="occupation">Occupation</label>
             <input type="text" name="occupation" required class="form-control">
         </div>
-        <select name="painType_id" required class="form-control mb-3">
+        <select name="paintype_id" required class="form-control mb-3">
             @foreach ($pains as $pain)
-                <option value="{{$pain->id}}">{{$pain->type}}</option>
+            <option value="{{$pain->id}}">{{$pain->type}}</option>
             @endforeach
         </select>
 
