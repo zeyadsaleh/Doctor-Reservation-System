@@ -32,4 +32,8 @@ Route::group(['middleware' => 'auth'], function () {
         'index', 'store', 'update', 'edit'
     ]);
 
+    ####################Email Confirmation#################
+    Route::get('/accept/{appointment}', 'AppointmentController@accept');
+    Route::get('/reject/{appointment}', 'AppointmentController@reject');
+
 });

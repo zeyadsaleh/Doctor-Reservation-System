@@ -12,71 +12,75 @@
 
     @hasrole('patient')
 
-    @if($appointmentCount < 1)
-    <div class="m-2">
+    @if(count($appointments) < 1) <div class="m-2">
         <form action="appointments" method="POST">
             @csrf
             <button class="btn btn-info">Make Reservation!</button>
         </form>
-    </div>
-    @endif
-    @endhasrole
+</div>
+@endif
+@endhasrole
 
+@if(count($appointments) > 0)
+@hasrole('patient')
+<h2 class="mt-3">Your Appointment</h2>
+@endhasrole
+@hasrole('doctor')
+<h2 class="mt-3">Your Assigned Appointments</h2>
+@endhasrole
+@hasrole('super-admin')
+<h2 class="mt-3">Unassigned Cases</h2>
+@endhasrole
 
-    @hasrole('patient')
-    <h2 class="mt-3">Your Appointment</h2>
-    @endhasrole
-    @hasrole('doctor')
-    <h2 class="mt-3">Your Assigned Appointments</h2>
-    @endhasrole
-    @hasrole('super-admin')
-    <h2 class="mt-3">Unassigned Cases</h2>
-    @endhasrole
+<table class="table mt-4">
 
-    <table class="table mt-4">
-
-        <thead class="thead-dark">
-            @hasanyrole('doctor|super-admin')
-            <th scope="col">Patient's Name</th>
-            @endhasanyrole
-            @hasanyrole('patient|super-admin')
-            <th scope="col">Doctor's Name</th>
-            @endhasanyrole
-            <th scope="col">Reservation Date</th>
-            @hasrole('super-admin')
-            <th scope="col">Assign</th>
+    <thead class="thead-dark">
+        @hasanyrole('doctor|super-admin')
+        <th scope="col">Patient's Name</th>
+        @endhasanyrole
+        @hasanyrole('patient|super-admin')
+        <th scope="col">Doctor's Name</th>
+        @endhasanyrole
+        <th scope="col">Reservation Date</th>
+        @hasrole('super-admin')
+        <th scope="col">Assign</th>
+        @endhasrole
+    </thead>
+    <tbody>
+        @forelse($appointments as $appointment)
+        <tr>
+            @hasrole('doctor')
+            <td>{{ $appointment->patient->fullName() }}</td>
+            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
             @endhasrole
-        </thead>
-        <tbody>
-            @forelse($appointments as $appointment)
-            <tr>
-                @hasrole('doctor')
-                <td>{{ $appointment->patient->fullName() }}</td>
-                <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
-                @endhasrole
-                @hasrole('patient')
-                <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
-                <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
-                @endhasrole
-                @hasrole('super-admin')
-                <td>{{ $appointment->patient->fullName() }}</td>
-                <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
-                <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
-                <td>
-                    <a class="btn btn-success" href="{{ route('appointments.edit', ['appointment' => $appointment->id]) }}">Assign</a>
-                </td>
-                @endhasrole
-            </tr>
+            @hasrole('patient')
+            <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
+            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
+            @endhasrole
+            @hasrole('super-admin')
+            <td>{{ $appointment->patient->fullName() }}</td>
+            <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
+            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
+            <td>
+                <a class="btn btn-success" href="{{ route('appointments.edit', ['appointment' => $appointment->id]) }}">Assign</a>
+            </td>
+            @endhasrole
+        </tr>
 
-            @empty
-            <div class="alert alert-primary" role="alert">
-                No Appointments!
-            </div>
+        @empty
+        <div class="alert alert-primary" role="alert">
+            No Appointments!
+        </div>
 
-            @endforelse
-        </tbody>
+        @endforelse
+    </tbody>
 
-    </table>
+</table>
+@else
+
+<h1 class="text-center">No Appointments!</h1>
+
+@endif
 
 </div>
 

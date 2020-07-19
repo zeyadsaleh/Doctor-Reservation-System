@@ -17,7 +17,7 @@ class CreatePatientsTable extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('mobile');
             $table->date('birth_date');
             $table->string('gender');

@@ -10,15 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePatientRequest;
 class PatientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -39,11 +30,12 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $patient = $request->only(['first_name', 'last_name', 'email', 'gender','birth_date','country','mobile','occupation','paintype_id']);
+        $user = Auth::User();
+        $user->update($request->only(['email']));
+        $patient = $request->only(['first_name', 'last_name', 'gender','birth_date','country','mobile','occupation','paintype_id']);
         $patient = Patient::create($patient);
         
         //assigning the patient to his credentials in users table by polymorfic relation        
-        $user = Auth::User();
         $patient->user()->save($user);
         return redirect('/appointments');
     }

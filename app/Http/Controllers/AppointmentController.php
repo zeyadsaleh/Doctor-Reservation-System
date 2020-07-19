@@ -6,8 +6,9 @@ use App\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Doctor;
-use App\PainType;
+use App\Notifications\AppointmentNotification;
 use App\Http\Requests\UpdateAppointmentRequest;
+
 class AppointmentController extends Controller
 {
     /**
@@ -24,12 +25,10 @@ class AppointmentController extends Controller
             $appointments = Appointment::where('doctor_id', $user->profilable->id)->get(); //doctors appointment that has been assgined to him
         } else if ($user->hasRole('patient')) {
             $appointments = Appointment::where('patient_id', $user->profilable->id)->get(); //patient appointement
-            $appointmentCount = Appointment::where('patient_id', $user->profilable->id)->count(); //count the appointmnets for the patient
         }
-
+        
         return view('appointments.index', [
             'appointments' => $appointments,
-            'appointmentCount' => $appointmentCount
         ]);
     }
 
@@ -54,17 +53,6 @@ class AppointmentController extends Controller
         $patient = Auth::User()->profilable;
         $patient->appointments()->create();
         return back()->withSuccess('Reservation sent!');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Appointment $appointment)
-    {
-        //
     }
 
     /**
@@ -93,6 +81,34 @@ class AppointmentController extends Controller
     {
         $data = $request->only('date', 'doctor_id');
         $appointment->update($data);
+        $this->sendNotification($appointment);
         return redirect()->route('appointments.index');
+    }
+
+    public function reject(Appointment $appointment)
+    {
+        $user = Auth::user();
+        $appointment->update([
+            $user->hasRole('doctor') ? 'is_doctor_accept' : 'is_patient_accept' => false,
+        ]);
+        return redirect()->route('appointments.index')->withSuccess('Rejected Successfully!');
+    }
+
+    public function accept(Appointment $appointment)
+    {
+        $user = Auth::user();
+        $appointment->update([
+            $user->hasRole('doctor') ? 'is_doctor_accept' : 'is_patient_accept' => true,
+        ]);
+        return redirect()->route('appointments.index')->withSuccess('Accepted Successfully!');
+    }
+
+    private function sendNotification($appointment)
+    {
+        $doctor = $appointment->doctor->user;
+        $patient = $appointment->patient->user;
+        dd($patient->notify(new AppointmentNotification($appointment, 'patient')));
+        $doctor->notify(new AppointmentNotification($appointment, 'doctor'));
+        $patient->notify(new AppointmentNotification($appointment, 'patient'));
     }
 }
