@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('appointment.store')->only(['store']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -89,11 +94,11 @@ class AppointmentController extends Controller
             $appointment->update($data);
             try {
                 $this->sendNotification($appointment);
+                return redirect()->route('appointments.index')->withSuccess('Email sent!');
             } catch (\Throwable $th) {
                 Log::error($th->getMessage());
                 return back()->withError('Failed in sending the email, please try again!');
             }  
-            return redirect()->route('appointments.index');
         } else {
             return back()->withError('Unauthorize!');
         }

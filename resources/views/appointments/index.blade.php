@@ -4,6 +4,12 @@
 
 <div class="container">
 
+    @if(Session::has('error'))
+    <div class="alert alert-danger" role="alert">
+        {{ Session::get('error') }}
+    </div>
+    @endif
+    
     @if(Session::has('success'))
     <div class="alert alert-success" role="alert">
         {{ Session::get('success') }}
@@ -57,14 +63,14 @@
             @endhasrole
             @hasrole('super-admin')
             <td>{{ $confirmedAppointments->patient->fullName() }}</td>
-            <td> '$confirmedAppointments->doctor->full_name'  }}</td>
-            <td> $confirmedAppointments->date  }}</td>
+            <td> '$confirmedAppointments->doctor->full_name' }}</td>
+            <td> $confirmedAppointments->date }}</td>
             @endhasrole
-        @empty
-        <div class="alert alert-primary" role="alert">
-            No Confirmed Appointments!
-        </div>
-        @endforelse
+            @empty
+            <div class="alert alert-primary" role="alert">
+                No Confirmed Appointments!
+            </div>
+            @endforelse
         </tr>
 
     </tbody>
@@ -111,17 +117,17 @@
             @endhasrole
             @hasrole('super-admin')
             <td>{{ $unconfirmedAppointments->patient->fullName() }}</td>
-            <td>{{  'Not Assigned yet'  }}</td>
-            <td>{{  'Not Determined yet'  }}</td>
+            <td>{{ 'Not Assigned yet'  }}</td>
+            <td>{{ 'Not Determined yet'  }}</td>
             <td>
                 <a class="btn btn-success" href="{{ route('appointments.edit', ['appointment' => $unconfirmedAppointments->id]) }}">Assign</a>
             </td>
             @endhasrole
-        @empty
-        <div class="alert alert-primary" role="alert">
-            No Pending Appointments!
-        </div>
-        @endforelse
+            @empty
+            <div class="alert alert-primary" role="alert">
+                No Pending Appointments!
+            </div>
+            @endforelse
         </tr>
 
     </tbody>
