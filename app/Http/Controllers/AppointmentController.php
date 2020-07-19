@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Doctor;
 use App\Notifications\AppointmentNotification;
 use App\Http\Requests\UpdateAppointmentRequest;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -20,17 +21,23 @@ class AppointmentController extends Controller
     {
         $user = Auth::User();
         if ($user->hasRole('super-admin')) {
-            $appointments = Appointment::whereNull('date')
-                ->orwhere('is_doctor_accept', 0)
-                ->orwhere('is_patient_accept', 0)->get(); //appointment that needed to be assigned by admin
+            $confirmedAppointments = Appointment::whereNull('date')->where('is_patient_accept', true)->where('is_doctor_accept', true)->get();
+            $unconfirmedAppointments = Appointment::whereNull('date')
+                ->orwhere('is_doctor_accept', false)
+                ->orwhere('is_patient_accept', false)->get(); //appointment that needed to be assigned by admin
         } else if ($user->hasRole('doctor')) {
-            $appointments = Appointment::where('doctor_id', $user->profilable->id)->where('is_patient_accept', 1)->where('is_doctor_accept', 1)->get(); //doctors appointment that has been assgined to him and confirmed by both doctor and patient
+            $confirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->where('is_patient_accept', true)->where('is_doctor_accept', true)->get(); //doctors appointment that has been assgined to him and confirmed by both doctor and patient
+            $unconfirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->orwhere('is_patient_accept', false)->orwhere('is_doctor_accept', false)->get();
         } else if ($user->hasRole('patient')) {
-            $appointments = Appointment::where('patient_id', $user->profilable->id)->where('is_patient_accept', 1)->where('is_doctor_accept', 1)->get(); //patient appointement that has been confirmed by both doctor and patient
+            $confirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->where('is_patient_accept', true)->where('is_doctor_accept', true)->get(); //patient appointement that has been confirmed by both doctor and patient
+            $unconfirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->orwhere('is_patient_accept', false)->orwhere('is_doctor_accept', false)->get();
+
         }
+        // dd($unconfirmedAppointments);
 
         return view('appointments.index', [
-            'appointments' => $appointments,
+            'confirmedAppointments' => $confirmedAppointments,
+            'unconfirmedAppointments' => $unconfirmedAppointments
         ]);
     }
 
@@ -84,7 +91,12 @@ class AppointmentController extends Controller
         if (Auth::User()->hasRole('super-admin')) {
             $data = $request->only('date', 'doctor_id');
             $appointment->update($data);
-            $this->sendNotification($appointment);
+            try {
+                $this->sendNotification($appointment);
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+                return back()->withError('Failed in sending the email, please try again!');
+            }  
             return redirect()->route('appointments.index');
         } else {
             return back()->withError('Unauthorize!');

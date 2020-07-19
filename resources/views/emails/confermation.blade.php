@@ -4,7 +4,7 @@
 <h2>Hello, {{ $appointment->patient->fullName() }}</h2>
 <p>Your have been assigned to  <strong> DR. {{ $appointment->doctor->full_name }}</strong></p>
 @elseif($type == 'doctor')
-<h2>Hello, {{ $appointment->doctor->fullName() }}</h2>
+<h2>Hello, {{ $appointment->doctor->full_name }}</h2>
 <p>You were asked by the admin for an appointment with <strong>{{ $appointment->patient->fullName() }}</strong></p>
 @endif
 

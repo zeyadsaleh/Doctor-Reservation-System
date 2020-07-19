@@ -22,11 +22,16 @@ class Appointment extends Model
     }
 
     public function confirmed(){
-        return $this->where('is_doctor_accept', 1)->where('is_patient_accept', 1);
+        return $this->where('is_doctor_accept', true)->where('is_patient_accept', true);
+    }
+
+    public function unconfirmed(){
+        return $this->orwhere('is_doctor_accept', false)->orwhere('is_patient_accept', false);
     }
 
     public function notAssigned(){
-        return $this->where('doctor_id', null);
+        return $this->where('doctor_id', null)->orwhere('is_doctor_accept', false)
+        ->orwhere('is_patient_accept', false)->get();;
     }
 
 }

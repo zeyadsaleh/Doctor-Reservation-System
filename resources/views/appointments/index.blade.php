@@ -12,7 +12,7 @@
 
     @hasrole('patient')
 
-    @if(count($appointments) < 1) <div class="m-2">
+    @if((count($confirmedAppointments) < 1) && (count($unconfirmedAppointments) < 1)) <div class="m-2">
         <form action="appointments" method="POST">
             @csrf
             <button class="btn btn-info">Make Reservation!</button>
@@ -21,12 +21,64 @@
 @endif
 @endhasrole
 
-@if(count($appointments) > 0)
+
+<!--################################ For confirmed appointments #########################-->
 @hasrole('patient')
-<h2 class="mt-3">Your Appointment</h2>
+<h2 class="mt-3">Your Confirmed Appointment</h2>
 @endhasrole
 @hasrole('doctor')
 <h2 class="mt-3">Your Assigned Appointments</h2>
+@endhasrole
+@hasrole('super-admin')
+<h2 class="mt-3">Assigned Cases</h2>
+@endhasrole
+
+<table class="table mt-4">
+
+    <thead class="thead-dark">
+        @hasanyrole('doctor|super-admin')
+        <th scope="col">Patient's Name</th>
+        @endhasanyrole
+        @hasanyrole('patient|super-admin')
+        <th scope="col">Doctor's Name</th>
+        @endhasanyrole
+        <th scope="col">Reservation Date</th>
+    </thead>
+    <tbody>
+        @forelse($confirmedAppointments as $confirmedAppointments)
+        <tr>
+            @hasrole('doctor')
+            <td>{{ $confirmedAppointments->patient->fullName() }}</td>
+            <td>{{ $confirmedAppointments->date  }}</td>
+            @endhasrole
+            @hasrole('patient')
+            <td>{{ $confirmedAppointments->doctor->full_name  }}</td>
+            <td>{{ $confirmedAppointments->date  }}</td>
+            @endhasrole
+            @hasrole('super-admin')
+            <td>{{ $confirmedAppointments->patient->fullName() }}</td>
+            <td> '$confirmedAppointments->doctor->full_name'  }}</td>
+            <td> $confirmedAppointments->date  }}</td>
+            @endhasrole
+        @empty
+        <div class="alert alert-primary" role="alert">
+            No Confirmed Appointments!
+        </div>
+        @endforelse
+        </tr>
+
+    </tbody>
+
+</table>
+
+
+
+<!--################################ For unconfirmed appointments #########################-->
+@hasrole('patient')
+<h2 class="mt-3">Your Pending Appointment</h2>
+@endhasrole
+@hasrole('doctor')
+<h2 class="mt-3">Your Pending Appointments</h2>
 @endhasrole
 @hasrole('super-admin')
 <h2 class="mt-3">Unassigned Cases</h2>
@@ -47,39 +99,35 @@
         @endhasrole
     </thead>
     <tbody>
-        @forelse($appointments as $appointment)
+        @forelse($unconfirmedAppointments as $unconfirmedAppointments)
         <tr>
             @hasrole('doctor')
-            <td>{{ $appointment->patient->fullName() }}</td>
-            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
+            <td>{{ $unconfirmedAppointments->patient->fullName() }}</td>
+            <td>{{ 'Not Determined yet'  }}</td>
             @endhasrole
             @hasrole('patient')
-            <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
-            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
+            <td>{{ 'Not Assigned yet'  }}</td>
+            <td>{{ 'Not Determined yet'   }}</td>
             @endhasrole
             @hasrole('super-admin')
-            <td>{{ $appointment->patient->fullName() }}</td>
-            <td>{{ $appointment->doctor ? $appointment->doctor->full_name : 'Not assigned yet' }}</td>
-            <td>{{ $appointment->date ? $appointment->date : 'Not assigned yet' }}</td>
+            <td>{{ $unconfirmedAppointments->patient->fullName() }}</td>
+            <td>{{  'Not Assigned yet'  }}</td>
+            <td>{{  'Not Determined yet'  }}</td>
             <td>
-                <a class="btn btn-success" href="{{ route('appointments.edit', ['appointment' => $appointment->id]) }}">Assign</a>
+                <a class="btn btn-success" href="{{ route('appointments.edit', ['appointment' => $unconfirmedAppointments->id]) }}">Assign</a>
             </td>
             @endhasrole
-        </tr>
-
         @empty
         <div class="alert alert-primary" role="alert">
-            No Appointments!
+            No Pending Appointments!
         </div>
         @endforelse
+        </tr>
+
     </tbody>
 
 </table>
-@else
 
-<h1 class="text-center">No Appointments!</h1>
-
-@endif
 
 </div>
 

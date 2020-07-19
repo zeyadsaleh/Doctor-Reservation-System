@@ -24,10 +24,11 @@ class StorePatientRequest extends FormRequest
      */
     public function rules()
     {
+        
         return [
             'first_name' => 'required|string|min:3|max:25',
             'last_name' => 'required|string|min:3|max:25',
-            'email' => 'required|email:rfc,dns|unique:patients,email',
+            'email' => 'required|unique:users,email',
             'mobile' => 'required|regex:/^0[0-9]{10}/m',
             'country' => 'required|string|min:3|max:20',
             'birth_date' => 'required|date',
