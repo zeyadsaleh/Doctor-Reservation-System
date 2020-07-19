@@ -36,7 +36,7 @@ Please check the official laravel installation guide for server requirements bef
 
 6. database migration and seed
     ```sh
-    $ php artisan migrate --seed
+    $ php artisan migrate:refresh --seed
     ```
 
 7. You can access the superadmin account by => username: superadmin, password: 123456789
