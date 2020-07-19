@@ -113,7 +113,6 @@ class AppointmentController extends Controller
     {
         $doctor = $appointment->doctor->user;
         $patient = $appointment->patient->user;
-        dd($patient->notify(new AppointmentNotification($appointment, 'patient')));
         $doctor->notify(new AppointmentNotification($appointment, 'doctor'));
         $patient->notify(new AppointmentNotification($appointment, 'patient'));
     }

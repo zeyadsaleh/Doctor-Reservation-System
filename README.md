@@ -35,9 +35,9 @@ Please check the official laravel installation guide for server requirements bef
 5. configure your email provider and your database settings in .env file
 
 6. database migration and seed
-```sh
-$ php artisan migrate --seed
-```
+    ```sh
+    $ php artisan migrate --seed
+    ```
 
 7. You can access the superadmin account by => username: superadmin, password: 123456789
 
