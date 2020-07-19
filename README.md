@@ -1,6 +1,6 @@
 # Doctor Reservation System
 
-A simple reservation system where patient can register into the website with his details including the type of pain that he suffers, and then he can make a reservation to meet a specialiest. <br> The admin manually assign the patient with the doctors who is specilize in that kind of patient's pain.
+A simple reservation system where patient can register into the website with his details including the type of pain that he suffered, and then he can make a reservation to meet a specialist. The admin manually assign the patient with the doctors who is specialize in that kind of patient's pain.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ Please check the official laravel installation guide for server requirements bef
 
 7. You can access the superadmin account by => username: superadmin, password: 123456789
 
-8. You can access any doctor's account within the seed and the password wil be 123456789
+8. You can access any doctor's account within the seed and the password will be 123456789
 
 Start the local development server
     ```
