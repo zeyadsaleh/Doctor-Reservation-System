@@ -24,9 +24,9 @@ class AppointmentController extends Controller
                 ->orwhere('is_doctor_accept', 0)
                 ->orwhere('is_patient_accept', 0)->get(); //appointment that needed to be assigned by admin
         } else if ($user->hasRole('doctor')) {
-            $appointments = Appointment::where('doctor_id', $user->profilable->id)->get(); //doctors appointment that has been assgined to him
+            $appointments = Appointment::where('doctor_id', $user->profilable->id)->where('is_patient_accept', 1)->where('is_doctor_accept', 1)->get(); //doctors appointment that has been assgined to him and confirmed by both doctor and patient
         } else if ($user->hasRole('patient')) {
-            $appointments = Appointment::where('patient_id', $user->profilable->id)->get(); //patient appointement
+            $appointments = Appointment::where('patient_id', $user->profilable->id)->where('is_patient_accept', 1)->where('is_doctor_accept', 1)->get(); //patient appointement that has been confirmed by both doctor and patient
         }
 
         return view('appointments.index', [
