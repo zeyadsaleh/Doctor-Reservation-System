@@ -20,13 +20,15 @@ class AppointmentController extends Controller
     {
         $user = Auth::User();
         if ($user->hasRole('super-admin')) {
-            $appointments = Appointment::where('doctor_id', null)->get(); //appointment that needed to be assigned by admin
+            $appointments = Appointment::whereNull('date')
+                ->orwhere('is_doctor_accept', 0)
+                ->orwhere('is_patient_accept', 0)->get(); //appointment that needed to be assigned by admin
         } else if ($user->hasRole('doctor')) {
             $appointments = Appointment::where('doctor_id', $user->profilable->id)->get(); //doctors appointment that has been assgined to him
         } else if ($user->hasRole('patient')) {
             $appointments = Appointment::where('patient_id', $user->profilable->id)->get(); //patient appointement
         }
-        
+
         return view('appointments.index', [
             'appointments' => $appointments,
         ]);
@@ -79,10 +81,14 @@ class AppointmentController extends Controller
      */
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
-        $data = $request->only('date', 'doctor_id');
-        $appointment->update($data);
-        $this->sendNotification($appointment);
-        return redirect()->route('appointments.index');
+        if (Auth::User()->hasRole('super-admin')) {
+            $data = $request->only('date', 'doctor_id');
+            $appointment->update($data);
+            $this->sendNotification($appointment);
+            return redirect()->route('appointments.index');
+        } else {
+            return back()->withError('Unauthorize!');
+        }
     }
 
     public function reject(Appointment $appointment)

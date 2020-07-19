@@ -71,7 +71,6 @@
         <div class="alert alert-primary" role="alert">
             No Appointments!
         </div>
-
         @endforelse
     </tbody>
 

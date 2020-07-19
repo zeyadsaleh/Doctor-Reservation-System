@@ -4,7 +4,13 @@
 
 <div class="container">
 
-@if($errors->any())
+    @if(Session::has('error'))
+    <div class="alert alert-error" role="alert">
+        {{ Session::get('error') }}
+    </div>
+    @endif
+
+    @if($errors->any())
     <div class="alert alert-danger">
         <ul>
             @foreach($errors->all() as $error)
@@ -41,7 +47,7 @@
                                 <select class="custom-select @error('doctor') is-invalid @enderror" name="doctor_id" id="doctor" autofocus>
                                     <option selected disabled>Open this select menu</option>
                                     @foreach ($doctors as $doctor)
-                                        <option value="{{ $doctor->id  }}">{{ $doctor->full_name }}</option>
+                                    <option value="{{ $doctor->id  }}">{{ $doctor->full_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
