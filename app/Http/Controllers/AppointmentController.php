@@ -21,19 +21,15 @@ class AppointmentController extends Controller
     {
         $user = Auth::User();
         if ($user->hasRole('super-admin')) {
-            $confirmedAppointments = Appointment::whereNull('date')->where('is_patient_accept', true)->where('is_doctor_accept', true)->get();
-            $unconfirmedAppointments = Appointment::whereNull('date')
-                ->orwhere('is_doctor_accept', false)
-                ->orwhere('is_patient_accept', false)->get(); //appointment that needed to be assigned by admin
+            $confirmedAppointments = Appointment::whereNull('date')->confirmed()->get(); //already assigned appointments
+            $unconfirmedAppointments = Appointment::whereNull('date')->unconfirmed()->get(); //appointment that needed to be assigned by admin
         } else if ($user->hasRole('doctor')) {
-            $confirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->where('is_patient_accept', true)->where('is_doctor_accept', true)->get(); //doctors appointment that has been assgined to him and confirmed by both doctor and patient
-            $unconfirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->orwhere('is_patient_accept', false)->orwhere('is_doctor_accept', false)->get();
+            $confirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->confirmed()->get(); //doctors appointment that has been assgined to him and confirmed by both doctor and patient
+            $unconfirmedAppointments = Appointment::where('doctor_id', $user->profilable->id)->unconfirmed()->get(); //doctors pending appointments
         } else if ($user->hasRole('patient')) {
-            $confirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->where('is_patient_accept', true)->where('is_doctor_accept', true)->get(); //patient appointement that has been confirmed by both doctor and patient
-            $unconfirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->orwhere('is_patient_accept', false)->orwhere('is_doctor_accept', false)->get();
-
+            $confirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->confirmed()->get(); //patient appointement that has been confirmed by both doctor and patient
+            $unconfirmedAppointments = Appointment::where('patient_id', $user->profilable->id)->unconfirmed()->get(); //patients pending appointments
         }
-        // dd($unconfirmedAppointments);
 
         return view('appointments.index', [
             'confirmedAppointments' => $confirmedAppointments,

@@ -21,17 +21,12 @@ class Appointment extends Model
       return $this->belongsTo('App\Patient');
     }
 
-    public function confirmed(){
-        return $this->where('is_doctor_accept', true)->where('is_patient_accept', true);
+    public function scopeConfirmed($q){
+        return $q->where('is_doctor_accept', true)->where('is_patient_accept', true);
     }
 
-    public function unconfirmed(){
-        return $this->orwhere('is_doctor_accept', false)->orwhere('is_patient_accept', false);
-    }
-
-    public function notAssigned(){
-        return $this->where('doctor_id', null)->orwhere('is_doctor_accept', false)
-        ->orwhere('is_patient_accept', false)->get();;
+    public function scopeUnconfirmed($q){
+        return $q->orwhere('is_doctor_accept', false)->orwhere('is_patient_accept', false);
     }
 
 }
